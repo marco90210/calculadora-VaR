@@ -29,69 +29,180 @@ warnings.filterwarnings("ignore")
 # ============================================================
 
 st.set_page_config(
-    page_title="Calculadora de VaR | Mesas de Trading",
-    page_icon="📊",
+    page_title="VaR Terminal | Mesas de Trading",
+    page_icon="📡",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # ============================================================
-# 2. CSS CUSTOMIZADO
+# 2. CSS — TEMA BLOOMBERG / TERMINAL FINANCEIRO
 # ============================================================
 
 st.markdown(
     """
     <style>
+        /* ── Fundo geral ── */
+        .stApp {
+            background-color: #0d0d0d;
+        }
+        section[data-testid="stSidebar"] {
+            background-color: #111111;
+            border-right: 1px solid #FF6600;
+        }
+        /* ── Texto geral ── */
+        html, body, [class*="css"], p, span, label, div {
+            color: #e0e0e0;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        h1, h2, h3, h4 { color: #FF6600 !important; font-family: 'Courier New', monospace; }
+
+        /* ── Header principal ── */
         .main-header {
-            font-size: 2.2rem;
+            font-size: 2rem;
             font-weight: 700;
-            color: #1a1a2e;
+            color: #FF6600 !important;
             text-align: center;
-            padding: 1rem 0 0.2rem 0;
+            padding: 0.8rem 0 0.1rem 0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #FF6600;
+            margin-bottom: 0.3rem;
         }
         .sub-header {
-            font-size: 1.05rem;
-            color: #555;
+            font-size: 0.9rem;
+            color: #888 !important;
             text-align: center;
+            letter-spacing: 3px;
+            text-transform: uppercase;
             margin-bottom: 1.5rem;
         }
+
+        /* ── Cards semáforo ── */
         .card-green {
-            background: linear-gradient(135deg, #d4edda, #c3e6cb);
-            border-left: 5px solid #28a745;
-            padding: 1rem 1.2rem;
-            border-radius: 8px;
+            background: #0a1a0a;
+            border: 1px solid #00FF41;
+            border-left: 4px solid #00FF41;
+            padding: 0.9rem 1.2rem;
+            border-radius: 4px;
             margin: 0.4rem 0;
+            box-shadow: 0 0 8px rgba(0,255,65,0.15);
         }
         .card-yellow {
-            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-            border-left: 5px solid #ffc107;
-            padding: 1rem 1.2rem;
-            border-radius: 8px;
+            background: #1a1500;
+            border: 1px solid #FFD700;
+            border-left: 4px solid #FFD700;
+            padding: 0.9rem 1.2rem;
+            border-radius: 4px;
             margin: 0.4rem 0;
+            box-shadow: 0 0 8px rgba(255,215,0,0.15);
         }
         .card-red {
-            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
-            border-left: 5px solid #dc3545;
-            padding: 1rem 1.2rem;
-            border-radius: 8px;
+            background: #1a0a0a;
+            border: 1px solid #FF3333;
+            border-left: 4px solid #FF3333;
+            padding: 0.9rem 1.2rem;
+            border-radius: 4px;
             margin: 0.4rem 0;
+            box-shadow: 0 0 8px rgba(255,51,51,0.2);
         }
+        .card-green h3, .card-green p { color: #00FF41 !important; }
+        .card-yellow h3, .card-yellow p { color: #FFD700 !important; }
+        .card-red h3, .card-red p { color: #FF3333 !important; }
+
+        /* ── Metric box ── */
         .metric-box {
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 10px;
+            background: #141414;
+            border: 1px solid #FF6600;
+            border-radius: 4px;
             padding: 1.2rem;
             text-align: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            box-shadow: 0 0 10px rgba(255,102,0,0.1);
         }
-        .alert-banner {
-            background: #dc3545;
-            color: white;
-            padding: 0.8rem 1.2rem;
-            border-radius: 8px;
-            font-weight: 600;
+        .metric-box h2 { color: #FF6600 !important; font-size: 2rem; }
+        .metric-box h4 { color: #FF6600 !important; }
+        .metric-box p  { color: #aaa !important; font-size: 0.82rem; }
+
+        /* ── Botões ── */
+        .stButton > button {
+            background: #FF6600 !important;
+            color: #000 !important;
+            font-weight: 700 !important;
+            font-family: 'Courier New', monospace !important;
+            border: none !important;
+            border-radius: 3px !important;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .stButton > button:hover {
+            background: #FF8C00 !important;
+            box-shadow: 0 0 12px rgba(255,102,0,0.5) !important;
+        }
+
+        /* ── Inputs, selects ── */
+        .stSelectbox > div > div,
+        .stRadio > div,
+        .stNumberInput > div > div > input,
+        .stSlider {
+            background-color: #1a1a1a !important;
+            color: #e0e0e0 !important;
+            border-color: #FF6600 !important;
+        }
+
+        /* ── Tabs ── */
+        .stTabs [data-baseweb="tab"] {
+            background: #1a1a1a;
+            color: #FF6600;
+            border-bottom: 2px solid #333;
+            font-family: 'Courier New', monospace;
+        }
+        .stTabs [aria-selected="true"] {
+            background: #FF6600 !important;
+            color: #000 !important;
+        }
+
+        /* ── Expander ── */
+        .streamlit-expanderHeader {
+            background: #1a1a1a !important;
+            color: #FF6600 !important;
+            border: 1px solid #333 !important;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ── Dataframe ── */
+        .stDataFrame { border: 1px solid #333; }
+
+        /* ── Métricas nativas ── */
+        [data-testid="metric-container"] {
+            background: #141414;
+            border: 1px solid #FF6600;
+            border-radius: 4px;
+            padding: 0.8rem;
+            box-shadow: 0 0 8px rgba(255,102,0,0.1);
+        }
+        [data-testid="metric-container"] label { color: #888 !important; font-size: 0.75rem; }
+        [data-testid="metric-container"] [data-testid="stMetricValue"] { color: #FF6600 !important; font-size: 1.4rem; }
+
+        /* ── Divider ── */
+        hr { border-color: #333 !important; }
+
+        /* ── Alertas / info ── */
+        .stAlert { border-radius: 3px; font-family: 'Courier New', monospace; }
+
+        /* ── Sidebar texto ── */
+        .css-1d391kg, [data-testid="stSidebarNav"] { color: #e0e0e0; }
+
+        /* ── Progress bar ── */
+        .stProgress > div > div { background-color: #FF6600 !important; }
+
+        /* ── Ticker style para título ── */
+        .ticker {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #00FF41;
+            letter-spacing: 2px;
             text-align: center;
-            margin: 0.5rem 0;
+            margin-bottom: 1rem;
         }
     </style>
     """,
@@ -452,44 +563,45 @@ def calcular_var_mesa(mesa_df, retornos_df, params):
 # ----------------------------------------------------------
 
 def page_home():
-    st.markdown('<div class="main-header">📊 Calculadora de VaR para Mesas de Trading</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Sistema de Monitoramento de Risco de Mercado</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">📡 VaR Terminal — Mesas de Trading</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">▸ sistema de monitoramento de risco de mercado ◂</div>', unsafe_allow_html=True)
+    st.markdown('<div class="ticker">PETR4 &nbsp;|&nbsp; VALE3 &nbsp;|&nbsp; ITUB4 &nbsp;|&nbsp; BBDC4 &nbsp;|&nbsp; ABEV3 &nbsp;|&nbsp; VaR 95% &nbsp;|&nbsp; HORIZON: 1D</div>', unsafe_allow_html=True)
     st.markdown("---")
 
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown("""
-        ### 🎯 Objetivo
+        ### ▸ OBJETIVO
         Simular a área de **risco de mercado** de uma instituição financeira,
         monitorando o **Value at Risk (VaR)** de diferentes mesas de trading
         e gerando alertas quando os limites aprovados são ultrapassados.
         """)
     with c2:
         st.markdown("""
-        ### 📐 Metodologias Implementadas
-        - **VaR Histórico** — distribuição empírica
-        - **VaR Paramétrico** — distribuição Normal
-        - **VaR Monte Carlo** — simulação GBM
-        - **Opções** — Aproximação Delta + Black-Scholes
+        ### ▸ METODOLOGIAS
+        - `HIST` — VaR Histórico (empírico)
+        - `PARAM` — VaR Paramétrico (Normal)
+        - `MC` — VaR Monte Carlo (GBM)
+        - `BS+Δ` — Black-Scholes + Delta (opções)
         """)
     with c3:
         st.markdown("""
-        ### 🏢 Mesas Monitoradas
-        - Mesa de Ações Brasil
-        - Mesa de Opções
-        - Mesa Long & Short
-        - Mesa de Volatilidade
-        - Mesa Proprietária
+        ### ▸ MESAS MONITORADAS
+        - `[01]` Ações Brasil
+        - `[02]` Opções
+        - `[03]` Long & Short
+        - `[04]` Volatilidade
+        - `[05]` Mesa Proprietária
         """)
 
     st.markdown("---")
-    st.markdown("### 🗺️ Fluxo de Uso")
+    st.markdown("### ▸ FLUXO DE OPERAÇÃO")
 
     passos = [
-        ("1️⃣", "Upload de Posições",    "Importe CSV/Excel ou use os dados de exemplo"),
-        ("2️⃣", "Parâmetros de Risco",   "Defina nível de confiança, horizonte e método"),
-        ("3️⃣", "Cálculo do VaR",        "Execute o cálculo para todas as mesas"),
-        ("4️⃣", "Dashboard Executivo",   "Veja gráficos, alertas e ranking de risco"),
+        ("01", "UPLOAD",      "Importe CSV/Excel ou carregue dados de exemplo"),
+        ("02", "PARÂMETROS",  "Defina confiança, horizonte e metodologia"),
+        ("03", "CÁLCULO",     "Execute o VaR para todas as mesas"),
+        ("04", "DASHBOARD",   "Monitore gráficos, alertas e ranking"),
     ]
 
     cols = st.columns(4)
@@ -497,21 +609,21 @@ def page_home():
         with cols[i]:
             st.markdown(f"""
             <div class="metric-box">
-                <h2>{num}</h2>
-                <h4>{titulo}</h4>
-                <p style="color:#666;font-size:0.88rem">{desc}</p>
+                <h2 style="color:#FF6600;font-size:2.5rem;margin:0">{num}</h2>
+                <h4 style="color:#FF6600;letter-spacing:2px;margin:0.3rem 0">{titulo}</h4>
+                <p style="color:#888;font-size:0.8rem;margin:0">{desc}</p>
             </div>
             """, unsafe_allow_html=True)
 
     st.markdown("---")
-    st.markdown("### 📖 Interpretação do Semáforo de Risco")
+    st.markdown("### ▸ SEMÁFORO DE RISCO")
     c1, c2, c3 = st.columns(3)
     with c1:
-        st.markdown('<div class="card-green"><b>🟢 Verde</b> — Utilização ≤ 70%<br>Risco confortável</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-green"><h3>● VERDE</h3><p>Utilização ≤ 70% — Risco confortável</p></div>', unsafe_allow_html=True)
     with c2:
-        st.markdown('<div class="card-yellow"><b>🟡 Amarelo</b> — Utilização entre 70% e 100%<br>Atenção redobrada</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-yellow"><h3>● AMARELO</h3><p>Utilização 70%–100% — Atenção redobrada</p></div>', unsafe_allow_html=True)
     with c3:
-        st.markdown('<div class="card-red"><b>🔴 Vermelho</b> — Utilização > 100%<br>Excesso de limite — ação imediata</div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-red"><h3>● VERMELHO</h3><p>Utilização > 100% — Excesso de limite</p></div>', unsafe_allow_html=True)
 
 
 # ----------------------------------------------------------
@@ -853,14 +965,23 @@ def page_dashboard():
                        "orange" if r["Utilizacao"] > 0.70 else "green"),
     } for mesa, r in res.items()]).sort_values("Utilizacao", ascending=False)
 
+    DARK = "plotly_dark"
+    ORANGE = "#FF6600"
+    GREEN  = "#00FF41"
+    RED    = "#FF3333"
+    YELLOW = "#FFD700"
+
+    def cor_plotly(c):
+        return RED if c == "red" else (YELLOW if c == "orange" else GREEN)
+
     # ---- KPIs ----
-    st.markdown("### 📌 Indicadores Principais")
+    st.markdown("### ▸ INDICADORES PRINCIPAIS")
     k1, k2, k3, k4 = st.columns(4)
-    k1.metric("Total VaR",        f"R$ {df['VaR'].sum()/1e6:.2f} M")
-    k2.metric("Total Limites",    f"R$ {df['Limite'].sum()/1e6:.2f} M")
-    k3.metric("Utilização Média", f"{df['Utilizacao'].mean():.1f}%")
-    k4.metric("Mesas em Excesso", str(len(df[df["Utilizacao"] > 100])),
-              delta="⚠️ Atenção" if len(df[df["Utilizacao"] > 100]) > 0 else "✅ OK")
+    k1.metric("TOTAL VaR",        f"R$ {df['VaR'].sum()/1e6:.2f} M")
+    k2.metric("TOTAL LIMITES",    f"R$ {df['Limite'].sum()/1e6:.2f} M")
+    k3.metric("UTILIZAÇÃO MÉDIA", f"{df['Utilizacao'].mean():.1f}%")
+    k4.metric("MESAS EM EXCESSO", str(len(df[df["Utilizacao"] > 100])),
+              delta="⚠️ ALERTA" if len(df[df["Utilizacao"] > 100]) > 0 else "✅ OK")
 
     st.markdown("---")
 
@@ -871,22 +992,29 @@ def page_dashboard():
         fig.add_trace(go.Bar(
             name="VaR Calculado",
             x=df["Mesa"], y=df["VaR"],
-            marker_color=df["Cor"].tolist(),
+            marker_color=[cor_plotly(c) for c in df["Cor"]],
             text=[f"R$ {v/1e3:.0f}K" for v in df["VaR"]],
             textposition="outside",
+            textfont=dict(color=ORANGE),
         ))
         fig.add_trace(go.Bar(
             name="Limite Aprovado",
             x=df["Mesa"], y=df["Limite"],
-            marker_color="lightsteelblue",
-            opacity=0.65,
+            marker_color="#333333",
+            marker_line_color=ORANGE,
+            marker_line_width=1,
+            opacity=0.8,
         ))
         fig.update_layout(
-            title="VaR Calculado vs Limite por Mesa",
+            template=DARK,
+            title=dict(text="VaR CALCULADO vs LIMITE", font=dict(color=ORANGE)),
             barmode="group",
             xaxis_tickangle=-25,
             yaxis_title="R$",
             height=420,
+            paper_bgcolor="#0d0d0d",
+            plot_bgcolor="#0d0d0d",
+            font=dict(family="Courier New", color="#e0e0e0"),
         )
         st.plotly_chart(fig, use_container_width=True)
 
@@ -897,18 +1025,25 @@ def page_dashboard():
             x=df["Utilizacao"],
             y=df["Mesa"],
             orientation="h",
-            marker_color=df["Cor"].tolist(),
+            marker_color=[cor_plotly(c) for c in df["Cor"]],
             text=[f"{u:.1f}%" for u in df["Utilizacao"]],
             textposition="outside",
+            textfont=dict(color="#e0e0e0"),
         ))
-        fig2.add_vline(x=100, line_dash="dash", line_color="red",
-                       annotation_text="Limite 100%", annotation_position="top")
-        fig2.add_vline(x=70,  line_dash="dot",  line_color="orange",
-                       annotation_text="Atenção 70%", annotation_position="top")
+        fig2.add_vline(x=100, line_dash="dash", line_color=RED,
+                       annotation_text="LIMITE 100%",
+                       annotation_font_color=RED)
+        fig2.add_vline(x=70,  line_dash="dot",  line_color=YELLOW,
+                       annotation_text="ATENÇÃO 70%",
+                       annotation_font_color=YELLOW)
         fig2.update_layout(
-            title="Utilização do Limite por Mesa (%)",
+            template=DARK,
+            title=dict(text="UTILIZAÇÃO DO LIMITE POR MESA (%)", font=dict(color=ORANGE)),
             xaxis_title="Utilização (%)",
             height=420,
+            paper_bgcolor="#0d0d0d",
+            plot_bgcolor="#0d0d0d",
+            font=dict(family="Courier New", color="#e0e0e0"),
         )
         st.plotly_chart(fig2, use_container_width=True)
 
@@ -917,10 +1052,16 @@ def page_dashboard():
     with c3:
         fig3 = px.pie(
             df, values="VaR", names="Mesa",
-            title="Distribuição do VaR por Mesa",
-            color_discrete_sequence=px.colors.qualitative.Set2,
+            title="DISTRIBUIÇÃO DO VaR POR MESA",
+            color_discrete_sequence=[ORANGE, GREEN, RED, YELLOW, "#00BFFF", "#FF69B4"],
         )
-        fig3.update_layout(height=400)
+        fig3.update_layout(
+            template=DARK,
+            height=400,
+            paper_bgcolor="#0d0d0d",
+            font=dict(family="Courier New", color="#e0e0e0"),
+            title_font_color=ORANGE,
+        )
         st.plotly_chart(fig3, use_container_width=True)
 
     with c4:
@@ -929,7 +1070,6 @@ def page_dashboard():
             ativo_p  = retornos.columns[0]
             ret_p    = retornos[ativo_p].dropna()
 
-            # VaR rolling 21 dias para 1M exposto
             var_roll, datas_roll = [], []
             for i in range(21, len(ret_p)):
                 w = ret_p.iloc[i - 21: i]
@@ -941,134 +1081,151 @@ def page_dashboard():
             fig4.add_trace(go.Scatter(
                 x=datas_roll[-60:], y=var_roll[-60:],
                 mode="lines",
-                line=dict(color="royalblue", width=2),
+                line=dict(color=ORANGE, width=2),
                 name="VaR Histórico (R$ 1M)",
-                fill="tozeroy", fillcolor="rgba(65,105,225,0.08)",
+                fill="tozeroy",
+                fillcolor="rgba(255,102,0,0.08)",
             ))
             fig4.update_layout(
-                title="Evolução do VaR Histórico (últimos 60 dias)",
-                xaxis_title="Data", yaxis_title="R$",
+                template=DARK,
+                title=dict(text="EVOLUÇÃO DO VaR — ÚLTIMOS 60 DIAS", font=dict(color=ORANGE)),
+                xaxis_title="DATA", yaxis_title="R$",
                 height=400,
+                paper_bgcolor="#0d0d0d",
+                plot_bgcolor="#0d0d0d",
+                font=dict(family="Courier New", color="#e0e0e0"),
             )
             st.plotly_chart(fig4, use_container_width=True)
 
     # ---- Distribuição de retornos ----
-    st.markdown("### 📉 Análise de Retornos por Ativo")
+    st.markdown("### ▸ ANÁLISE DE RETORNOS POR ATIVO")
     if "retornos" in st.session_state:
         retornos = st.session_state["retornos"]
-        ativo_sel = st.selectbox("Selecione o ativo:", retornos.columns.tolist())
+        ativo_sel = st.selectbox("SELECIONE O ATIVO:", retornos.columns.tolist())
         ret_sel   = retornos[ativo_sel].dropna()
 
         c5, c6 = st.columns(2)
         with c5:
-            # Histograma + curva normal ajustada
             pct_var = np.percentile(ret_sel, (1 - params["confianca"]) * 100)
             x_norm  = np.linspace(ret_sel.min(), ret_sel.max(), 300)
             y_norm  = norm.pdf(x_norm, ret_sel.mean(), ret_sel.std())
-            y_norm  = y_norm / y_norm.max() * 40  # escala visual
+            y_norm  = y_norm / y_norm.max() * 40
 
             fig5 = go.Figure()
             fig5.add_trace(go.Histogram(
-                x=ret_sel, nbinsx=50, name="Retornos",
-                marker_color="steelblue", opacity=0.65,
-                histnorm="count",
+                x=ret_sel, nbinsx=50, name="RETORNOS",
+                marker_color=ORANGE, opacity=0.6,
             ))
             fig5.add_trace(go.Scatter(
                 x=x_norm, y=y_norm, mode="lines",
-                line=dict(color="darkorange", width=2), name="Normal ajustada",
+                line=dict(color=GREEN, width=2), name="NORMAL AJUSTADA",
             ))
             fig5.add_vline(
-                x=pct_var, line_dash="dash", line_color="red",
+                x=pct_var, line_dash="dash", line_color=RED,
                 annotation_text=f"VaR {params['confianca']*100:.0f}%: {pct_var*100:.2f}%",
+                annotation_font_color=RED,
             )
             fig5.update_layout(
-                title=f"Distribuição dos Retornos — {ativo_sel}",
-                xaxis_title="Retorno Diário", yaxis_title="Frequência",
+                template=DARK,
+                title=dict(text=f"DISTRIBUIÇÃO DOS RETORNOS — {ativo_sel}", font=dict(color=ORANGE)),
+                xaxis_title="RETORNO DIÁRIO", yaxis_title="FREQUÊNCIA",
                 height=380,
+                paper_bgcolor="#0d0d0d", plot_bgcolor="#0d0d0d",
+                font=dict(family="Courier New", color="#e0e0e0"),
             )
             st.plotly_chart(fig5, use_container_width=True)
 
         with c6:
-            # Preços históricos
             if "precos" in st.session_state and ativo_sel in st.session_state["precos"].columns:
                 precos = st.session_state["precos"]
                 fig6 = go.Figure()
                 fig6.add_trace(go.Scatter(
                     x=precos.index, y=precos[ativo_sel],
-                    mode="lines", line=dict(color="darkblue", width=1.5),
+                    mode="lines", line=dict(color=ORANGE, width=1.5),
                     name=ativo_sel,
-                    fill="tozeroy", fillcolor="rgba(0,0,139,0.05)",
+                    fill="tozeroy", fillcolor="rgba(255,102,0,0.06)",
                 ))
                 fig6.update_layout(
-                    title=f"Evolução do Preço — {ativo_sel}",
-                    xaxis_title="Data", yaxis_title="Preço (R$)",
+                    template=DARK,
+                    title=dict(text=f"EVOLUÇÃO DO PREÇO — {ativo_sel}", font=dict(color=ORANGE)),
+                    xaxis_title="DATA", yaxis_title="PREÇO (R$)",
                     height=380,
+                    paper_bgcolor="#0d0d0d", plot_bgcolor="#0d0d0d",
+                    font=dict(family="Courier New", color="#e0e0e0"),
                 )
                 st.plotly_chart(fig6, use_container_width=True)
 
     # ---- Comparação de metodologias ----
-    st.markdown("### 🔬 Comparação entre Metodologias (R$ 1 M exposto)")
+    st.markdown("### ▸ COMPARAÇÃO ENTRE METODOLOGIAS (R$ 1M EXPOSTO)")
     if "retornos" in st.session_state:
         retornos = st.session_state["retornos"]
         cnf      = params["confianca"]
         comp     = []
         for ativo in retornos.columns:
             rt = retornos[ativo].dropna()
-            vh, _  = var_historico(rt, cnf, 1_000_000)
-            vp, _  = var_parametrico(rt, cnf, 1_000_000)
+            vh, _    = var_historico(rt, cnf, 1_000_000)
+            vp, _    = var_parametrico(rt, cnf, 1_000_000)
             vm, _, _ = var_monte_carlo(rt, cnf, 1_000_000, 5_000)
             comp.append({"Ativo": ativo, "Histórico": vh, "Paramétrico": vp, "Monte Carlo": vm})
 
         df_comp = pd.DataFrame(comp)
         fig7 = go.Figure()
-        cores_met = {"Histórico": "steelblue", "Paramétrico": "darkorange", "Monte Carlo": "seagreen"}
+        cores_met = {"Histórico": ORANGE, "Paramétrico": GREEN, "Monte Carlo": "#00BFFF"}
         for met, cor in cores_met.items():
             fig7.add_trace(go.Bar(
                 name=met, x=df_comp["Ativo"], y=df_comp[met],
                 marker_color=cor,
                 text=[f"R$ {v/1e3:.1f}K" for v in df_comp[met]],
                 textposition="outside",
+                textfont=dict(color="#e0e0e0"),
             ))
         fig7.update_layout(
-            title=f"Comparação VaR por Metodologia — IC {cnf*100:.0f}%",
+            template=DARK,
+            title=dict(text=f"COMPARAÇÃO VaR POR METODOLOGIA — IC {cnf*100:.0f}%", font=dict(color=ORANGE)),
             barmode="group", yaxis_title="R$", height=420,
+            paper_bgcolor="#0d0d0d", plot_bgcolor="#0d0d0d",
+            font=dict(family="Courier New", color="#e0e0e0"),
         )
         st.plotly_chart(fig7, use_container_width=True)
 
-    # ---- Simulação Monte Carlo (histograma das perdas) ----
-    st.markdown("### 🎲 Histograma das Perdas Simuladas (Monte Carlo)")
+    # ---- Monte Carlo histograma ----
+    st.markdown("### ▸ SIMULAÇÃO MONTE CARLO — HISTOGRAMA DE PERDAS")
     if "retornos" in st.session_state:
         retornos  = st.session_state["retornos"]
-        ativo_mc  = st.selectbox("Ativo para Monte Carlo:", retornos.columns.tolist(), key="mc_ativo")
-        val_mc    = st.number_input("Valor da posição (R$)", value=1_000_000, step=100_000, key="mc_val")
+        ativo_mc  = st.selectbox("ATIVO PARA MONTE CARLO:", retornos.columns.tolist(), key="mc_ativo")
+        val_mc    = st.number_input("VALOR DA POSIÇÃO (R$)", value=1_000_000, step=100_000, key="mc_val")
 
-        if st.button("▶️ Rodar Simulação MC", key="btn_mc"):
+        if st.button("▶ RODAR SIMULAÇÃO MC", key="btn_mc"):
             ret_mc = retornos[ativo_mc].dropna()
             var_mc_val, es_mc, ret_sim = var_monte_carlo(ret_mc, params["confianca"], val_mc, 10_000)
-            perdas_sim = -ret_sim * val_mc  # perdas em R$
+            perdas_sim = -ret_sim * val_mc
 
             pct_line = np.percentile(perdas_sim, params["confianca"] * 100)
 
             fig_mc = go.Figure()
             fig_mc.add_trace(go.Histogram(
                 x=perdas_sim, nbinsx=80,
-                marker_color="steelblue", opacity=0.7,
-                name="Perdas Simuladas",
+                marker_color=ORANGE, opacity=0.7,
+                name="PERDAS SIMULADAS",
             ))
             fig_mc.add_vline(
-                x=pct_line, line_dash="dash", line_color="red",
+                x=pct_line, line_dash="dash", line_color=RED,
                 annotation_text=f"VaR {params['confianca']*100:.0f}%: R$ {pct_line:,.0f}",
+                annotation_font_color=RED,
             )
             fig_mc.update_layout(
-                title=f"Distribuição das Perdas Simuladas — {ativo_mc}",
-                xaxis_title="Perda Simulada (R$)", yaxis_title="Frequência",
+                template=DARK,
+                title=dict(text=f"DISTRIBUIÇÃO DAS PERDAS SIMULADAS — {ativo_mc}", font=dict(color=ORANGE)),
+                xaxis_title="PERDA SIMULADA (R$)", yaxis_title="FREQUÊNCIA",
                 height=400,
+                paper_bgcolor="#0d0d0d", plot_bgcolor="#0d0d0d",
+                font=dict(family="Courier New", color="#e0e0e0"),
             )
             st.plotly_chart(fig_mc, use_container_width=True)
 
             col_a, col_b = st.columns(2)
-            col_a.metric("VaR Monte Carlo", f"R$ {var_mc_val:,.0f}")
-            col_b.metric("Expected Shortfall (ES)", f"R$ {es_mc:,.0f}")
+            col_a.metric("VaR MONTE CARLO", f"R$ {var_mc_val:,.0f}")
+            col_b.metric("EXPECTED SHORTFALL (ES)", f"R$ {es_mc:,.0f}")
 
 
 # ============================================================
@@ -1076,35 +1233,53 @@ def page_dashboard():
 # ============================================================
 
 def main():
-    st.sidebar.markdown("## 📊 VaR Trading Desk")
+    st.sidebar.markdown("""
+    <div style="text-align:center;padding:0.5rem 0 0.2rem 0;border-bottom:1px solid #FF6600;margin-bottom:0.8rem">
+        <span style="color:#FF6600;font-family:'Courier New',monospace;font-size:1.1rem;font-weight:700;letter-spacing:3px">
+        📡 VaR TERMINAL
+        </span><br>
+        <span style="color:#555;font-size:0.7rem;letter-spacing:2px">RISK MANAGEMENT SYSTEM</span>
+    </div>
+    """, unsafe_allow_html=True)
 
     paginas = {
-        "🏠 Início":                  page_home,
-        "📁 Upload de Posições":       page_upload,
-        "⚙️ Parâmetros de Risco":      page_parametros,
-        "📐 Cálculo do VaR":           page_calculo,
-        "🚦 Monitoramento de Limites": page_limites,
-        "📊 Dashboard Executivo":      page_dashboard,
+        "▸ INÍCIO":                   page_home,
+        "▸ UPLOAD DE POSIÇÕES":        page_upload,
+        "▸ PARÂMETROS DE RISCO":       page_parametros,
+        "▸ CÁLCULO DO VaR":            page_calculo,
+        "▸ MONITORAMENTO DE LIMITES":  page_limites,
+        "▸ DASHBOARD EXECUTIVO":       page_dashboard,
     }
 
-    pagina = st.sidebar.radio("Navegação", list(paginas.keys()))
+    pagina = st.sidebar.radio("", list(paginas.keys()))
 
-    # Status das mesas na sidebar (após cálculo)
+    # Status das mesas na sidebar
     if "resultados" in st.session_state:
         st.sidebar.markdown("---")
-        st.sidebar.markdown("#### 🚦 Status das Mesas")
+        st.sidebar.markdown(
+            "<span style='color:#FF6600;font-size:0.75rem;letter-spacing:2px'>■ STATUS DAS MESAS</span>",
+            unsafe_allow_html=True
+        )
         for mesa, r in st.session_state["resultados"].items():
-            emoji = r["Emoji"]
-            util  = r["Utilizacao"] * 100
-            st.sidebar.markdown(f"{emoji} **{mesa}** — {util:.1f}%")
+            cor = "#00FF41" if r["Status"] == "Verde" else ("#FFD700" if r["Status"] == "Amarelo" else "#FF3333")
+            util = r["Utilizacao"] * 100
+            st.sidebar.markdown(
+                f"<span style='color:{cor};font-size:0.8rem'>● {mesa[:14]:<14} {util:5.1f}%</span>",
+                unsafe_allow_html=True
+            )
 
     st.sidebar.markdown("---")
     params_sidebar = st.session_state.get("params", {})
-    st.sidebar.caption(f"Método: {params_sidebar.get('metodologia', '—')}")
-    st.sidebar.caption(f"Confiança: {params_sidebar.get('confianca', 0.95)*100:.0f}%")
-    st.sidebar.caption("Projeto Final — Gestão de Risco e Derivativos")
+    met = params_sidebar.get("metodologia", "—")
+    cnf = params_sidebar.get("confianca", 0.95) * 100
+    st.sidebar.markdown(
+        f"<span style='color:#555;font-size:0.72rem;font-family:Courier New'>"
+        f"MÉTODO : {met}<br>IC     : {cnf:.0f}%<br>"
+        f"─────────────────────<br>"
+        f"Gestão de Risco e Derivativos</span>",
+        unsafe_allow_html=True
+    )
 
-    # Renderizar página selecionada
     paginas[pagina]()
 
 
