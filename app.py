@@ -920,7 +920,7 @@ def page_limites():
             "VaR Calculado":  "R$ {:,.0f}",
             "Limite VaR":     "R$ {:,.0f}",
             "Utilização (%)": "{:.1f}%",
-        }).background_gradient(subset=["Utilização (%)"], cmap="RdYlGn_r"),
+        }),
         use_container_width=True,
     )
 
