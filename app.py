@@ -1,6 +1,8 @@
 # ============================================================
 # CALCULADORA DE VaR — GESTÃO DE MESAS DE TRADING
 # Projeto Final — Gestão de Risco e Derivativos
+# Prof. João Luiz Chela
+# Alunos: Giovanna Machado Gomes, João Juchem Bulhões e Marco Antônio Heleno Ferreira
 # ============================================================
 # Estrutura:
 #   1. Imports e configuração
