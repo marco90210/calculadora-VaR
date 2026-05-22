@@ -29,194 +29,167 @@ warnings.filterwarnings("ignore")
 # ============================================================
 
 st.set_page_config(
-    page_title="VaR Dashboard | Mesas de Trading",
-    page_icon="📊",
+    page_title="VaR Terminal | Mesas de Trading",
+    page_icon="📡",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # ============================================================
-# 2. CSS — TEMA CLARO CORPORATIVO
+# 2. CSS — TEMA BLOOMBERG / TERMINAL FINANCEIRO
 # ============================================================
 
 st.markdown(
     """
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
         /* ── Fundo geral ── */
-        .stApp { background-color: #F4F6FA; }
+        .stApp { background-color: #0d0d0d; }
 
         section[data-testid="stSidebar"] {
-            background: linear-gradient(180deg, #0A2342 0%, #1B3A6B 100%);
-            border-right: none;
+            background-color: #111111;
+            border-right: 1px solid #FF6600;
         }
 
         /* ── Texto geral ── */
         html, body, [class*="css"], p, span, label, div {
-            font-family: 'Inter', sans-serif;
-            color: #1a1a2e;
+            color: #e0e0e0;
+            font-family: 'Courier New', Courier, monospace;
         }
-        h1, h2, h3, h4 {
-            font-family: 'Inter', sans-serif;
-            color: #0A2342 !important;
-            font-weight: 600;
-        }
-
-        /* ── Sidebar textos ── */
-        section[data-testid="stSidebar"] * { color: #CBD5E1 !important; }
-        section[data-testid="stSidebar"] h1,
-        section[data-testid="stSidebar"] h2,
-        section[data-testid="stSidebar"] h3 { color: #FFFFFF !important; }
+        h1, h2, h3, h4 { color: #FF6600 !important; font-family: 'Courier New', monospace; }
 
         /* ── Header principal ── */
         .main-header {
             font-size: 2rem;
             font-weight: 700;
-            color: #0A2342 !important;
+            color: #FF6600 !important;
             text-align: center;
-            padding: 1rem 0 0.2rem 0;
-            letter-spacing: 1px;
+            padding: 0.8rem 0 0.1rem 0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #FF6600;
+            margin-bottom: 0.3rem;
         }
         .sub-header {
-            font-size: 0.95rem;
-            color: #64748B !important;
+            font-size: 0.9rem;
+            color: #888 !important;
             text-align: center;
+            letter-spacing: 3px;
+            text-transform: uppercase;
             margin-bottom: 1.5rem;
-            font-weight: 400;
-        }
-        .badge {
-            display: inline-block;
-            background: #E8F0FE;
-            color: #1B3A6B !important;
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 0.2rem 0.7rem;
-            border-radius: 20px;
-            margin: 0 0.2rem;
-            letter-spacing: 1px;
         }
 
         /* ── Cards semáforo ── */
         .card-green {
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-top: 4px solid #16A34A;
-            padding: 1rem 1.2rem;
-            border-radius: 8px;
+            background: #0a1a0a;
+            border: 1px solid #00FF41;
+            border-left: 4px solid #00FF41;
+            padding: 0.9rem 1.2rem;
+            border-radius: 4px;
             margin: 0.4rem 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 0 8px rgba(0,255,65,0.15);
         }
         .card-yellow {
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-top: 4px solid #D97706;
-            padding: 1rem 1.2rem;
-            border-radius: 8px;
+            background: #1a1500;
+            border: 1px solid #FFD700;
+            border-left: 4px solid #FFD700;
+            padding: 0.9rem 1.2rem;
+            border-radius: 4px;
             margin: 0.4rem 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 0 8px rgba(255,215,0,0.15);
         }
         .card-red {
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-top: 4px solid #DC2626;
-            padding: 1rem 1.2rem;
-            border-radius: 8px;
+            background: #1a0a0a;
+            border: 1px solid #FF3333;
+            border-left: 4px solid #FF3333;
+            padding: 0.9rem 1.2rem;
+            border-radius: 4px;
             margin: 0.4rem 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 0 8px rgba(255,51,51,0.2);
         }
-        .card-green h3 { color: #16A34A !important; }
-        .card-green p  { color: #4B5563 !important; margin: 0; }
-        .card-yellow h3 { color: #D97706 !important; }
-        .card-yellow p  { color: #4B5563 !important; margin: 0; }
-        .card-red h3 { color: #DC2626 !important; }
-        .card-red p  { color: #4B5563 !important; margin: 0; }
+        .card-green h3, .card-green p { color: #00FF41 !important; }
+        .card-yellow h3, .card-yellow p { color: #FFD700 !important; }
+        .card-red h3, .card-red p { color: #FF3333 !important; }
 
-        /* ── Metric box (steps) ── */
+        /* ── Metric box ── */
         .metric-box {
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-radius: 10px;
-            padding: 1.4rem 1rem;
+            background: #141414;
+            border: 1px solid #FF6600;
+            border-radius: 4px;
+            padding: 1.2rem;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            transition: box-shadow 0.2s;
+            box-shadow: 0 0 10px rgba(255,102,0,0.1);
         }
-        .metric-box:hover { box-shadow: 0 4px 16px rgba(10,35,66,0.12); }
-        .metric-box h2 { color: #1B3A6B !important; font-size: 2.2rem; margin: 0; }
-        .metric-box h4 { color: #0A2342 !important; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; margin: 0.4rem 0 0.2rem 0; }
-        .metric-box p  { color: #64748B !important; font-size: 0.8rem; margin: 0; }
+        .metric-box h2 { color: #FF6600 !important; font-size: 2rem; }
+        .metric-box h4 { color: #FF6600 !important; }
+        .metric-box p  { color: #aaa !important; font-size: 0.82rem; }
 
         /* ── Botões ── */
         .stButton > button {
-            background: linear-gradient(135deg, #1B3A6B, #0A2342) !important;
-            color: #FFFFFF !important;
-            font-weight: 600 !important;
-            font-family: 'Inter', sans-serif !important;
+            background: #FF6600 !important;
+            color: #000 !important;
+            font-weight: 700 !important;
+            font-family: 'Courier New', monospace !important;
             border: none !important;
-            border-radius: 6px !important;
-            padding: 0.5rem 1.5rem !important;
-            letter-spacing: 0.5px;
+            border-radius: 3px !important;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
         .stButton > button:hover {
-            background: linear-gradient(135deg, #2563EB, #1B3A6B) !important;
-            box-shadow: 0 4px 12px rgba(27,58,107,0.3) !important;
+            background: #FF8C00 !important;
+            box-shadow: 0 0 12px rgba(255,102,0,0.5) !important;
         }
 
         /* ── Tabs ── */
         .stTabs [data-baseweb="tab"] {
-            background: transparent;
-            color: #64748B;
-            border-bottom: 2px solid #E2E8F0;
-            font-family: 'Inter', sans-serif;
-            font-weight: 500;
+            background: #1a1a1a;
+            color: #FF6600;
+            border-bottom: 2px solid #333;
+            font-family: 'Courier New', monospace;
         }
         .stTabs [aria-selected="true"] {
-            color: #1B3A6B !important;
-            border-bottom: 2px solid #1B3A6B !important;
-            font-weight: 600 !important;
+            background: #FF6600 !important;
+            color: #000 !important;
         }
 
         /* ── Expander ── */
         .streamlit-expanderHeader {
-            background: #FFFFFF !important;
-            color: #0A2342 !important;
-            border: 1px solid #E2E8F0 !important;
-            border-radius: 6px !important;
-            font-weight: 600;
+            background: #1a1a1a !important;
+            color: #FF6600 !important;
+            border: 1px solid #333 !important;
+            font-family: 'Courier New', monospace;
         }
+
+        /* ── Dataframe ── */
+        .stDataFrame { border: 1px solid #333; }
 
         /* ── Métricas nativas ── */
         [data-testid="metric-container"] {
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-radius: 8px;
-            padding: 1rem;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            background: #141414;
+            border: 1px solid #FF6600;
+            border-radius: 4px;
+            padding: 0.8rem;
+            box-shadow: 0 0 8px rgba(255,102,0,0.1);
         }
-        [data-testid="metric-container"] label {
-            color: #64748B !important;
-            font-size: 0.75rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        [data-testid="metric-container"] [data-testid="stMetricValue"] {
-            color: #0A2342 !important;
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        /* ── Progress bar ── */
-        .stProgress > div > div { background-color: #1B3A6B !important; }
+        [data-testid="metric-container"] label { color: #888 !important; font-size: 0.75rem; }
+        [data-testid="metric-container"] [data-testid="stMetricValue"] { color: #FF6600 !important; font-size: 1.4rem; }
 
         /* ── Divider ── */
-        hr { border-color: #E2E8F0 !important; }
+        hr { border-color: #333 !important; }
 
-        /* ── Dataframe ── */
-        .stDataFrame {
-            border: 1px solid #E2E8F0 !important;
-            border-radius: 8px;
+        /* ── Alertas ── */
+        .stAlert { border-radius: 3px; font-family: 'Courier New', monospace; }
+
+        /* ── Progress bar ── */
+        .stProgress > div > div { background-color: #FF6600 !important; }
+
+        /* ── Ticker ── */
+        .ticker {
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            color: #00FF41;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 1rem;
         }
     </style>
     """,
@@ -577,52 +550,45 @@ def calcular_var_mesa(mesa_df, retornos_df, params):
 # ----------------------------------------------------------
 
 def page_home():
-    st.markdown('<div class="main-header">📊 VaR Dashboard — Mesas de Trading</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">Sistema de Monitoramento de Risco de Mercado</div>', unsafe_allow_html=True)
-    st.markdown("""
-    <div style="text-align:center;margin-bottom:1.5rem">
-        <span class="badge">VaR HISTÓRICO</span>
-        <span class="badge">PARAMÉTRICO</span>
-        <span class="badge">MONTE CARLO</span>
-        <span class="badge">BLACK-SCHOLES</span>
-    </div>
-    """, unsafe_allow_html=True)
+    st.markdown('<div class="main-header">📡 VaR Terminal — Mesas de Trading</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">▸ sistema de monitoramento de risco de mercado ◂</div>', unsafe_allow_html=True)
+    st.markdown('<div class="ticker">PETR4 &nbsp;|&nbsp; VALE3 &nbsp;|&nbsp; ITUB4 &nbsp;|&nbsp; BBDC4 &nbsp;|&nbsp; ABEV3 &nbsp;|&nbsp; VaR 95% &nbsp;|&nbsp; HORIZON: 1D</div>', unsafe_allow_html=True)
     st.markdown("---")
 
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown("""
-        ### 🎯 Objetivo
+        ### ▸ OBJETIVO
         Simular a área de **risco de mercado** de uma instituição financeira,
         monitorando o **Value at Risk (VaR)** de diferentes mesas de trading
         e gerando alertas quando os limites aprovados são ultrapassados.
         """)
     with c2:
         st.markdown("""
-        ### 📐 Metodologias
-        - **VaR Histórico** — distribuição empírica
-        - **VaR Paramétrico** — distribuição Normal
-        - **VaR Monte Carlo** — simulação GBM
-        - **Opções** — Aproximação Delta + Black-Scholes
+        ### ▸ METODOLOGIAS
+        - `HIST` — VaR Histórico (empírico)
+        - `PARAM` — VaR Paramétrico (Normal)
+        - `MC` — VaR Monte Carlo (GBM)
+        - `BS+Δ` — Black-Scholes + Delta (opções)
         """)
     with c3:
         st.markdown("""
-        ### 🏢 Mesas Monitoradas
-        - Mesa de Ações Brasil
-        - Mesa de Opções
-        - Mesa Long & Short
-        - Mesa de Volatilidade
-        - Mesa Proprietária
+        ### ▸ MESAS MONITORADAS
+        - `[01]` Ações Brasil
+        - `[02]` Opções
+        - `[03]` Long & Short
+        - `[04]` Volatilidade
+        - `[05]` Mesa Proprietária
         """)
 
     st.markdown("---")
-    st.markdown("### 🗺️ Fluxo de Uso")
+    st.markdown("### ▸ FLUXO DE OPERAÇÃO")
 
     passos = [
-        ("01", "Upload",      "Importe CSV/Excel ou carregue dados de exemplo"),
-        ("02", "Parâmetros",  "Defina confiança, horizonte e metodologia"),
-        ("03", "Cálculo",     "Execute o VaR para todas as mesas"),
-        ("04", "Dashboard",   "Monitore gráficos, alertas e ranking"),
+        ("01", "UPLOAD",      "Importe CSV/Excel ou carregue dados de exemplo"),
+        ("02", "PARÂMETROS",  "Defina confiança, horizonte e metodologia"),
+        ("03", "CÁLCULO",     "Execute o VaR para todas as mesas"),
+        ("04", "DASHBOARD",   "Monitore gráficos, alertas e ranking"),
     ]
 
     cols = st.columns(4)
@@ -630,21 +596,21 @@ def page_home():
         with cols[i]:
             st.markdown(f"""
             <div class="metric-box">
-                <h2>{num}</h2>
-                <h4>{titulo}</h4>
-                <p>{desc}</p>
+                <h2 style="color:#FF6600;font-size:2.5rem;margin:0">{num}</h2>
+                <h4 style="color:#FF6600;letter-spacing:2px;margin:0.3rem 0">{titulo}</h4>
+                <p style="color:#888;font-size:0.8rem;margin:0">{desc}</p>
             </div>
             """, unsafe_allow_html=True)
 
     st.markdown("---")
-    st.markdown("### 🚦 Semáforo de Risco")
+    st.markdown("### ▸ SEMÁFORO DE RISCO")
     c1, c2, c3 = st.columns(3)
     with c1:
-        st.markdown('<div class="card-green"><h3>🟢 Verde</h3><p>Utilização ≤ 70% — Risco confortável</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-green"><h3>● VERDE</h3><p>Utilização ≤ 70% — Risco confortável</p></div>', unsafe_allow_html=True)
     with c2:
-        st.markdown('<div class="card-yellow"><h3>🟡 Amarelo</h3><p>Utilização 70%–100% — Atenção redobrada</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-yellow"><h3>● AMARELO</h3><p>Utilização 70%–100% — Atenção redobrada</p></div>', unsafe_allow_html=True)
     with c3:
-        st.markdown('<div class="card-red"><h3>🔴 Vermelho</h3><p>Utilização > 100% — Excesso de limite</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-red"><h3>● VERMELHO</h3><p>Utilização > 100% — Excesso de limite</p></div>', unsafe_allow_html=True)
 
 
 # ----------------------------------------------------------
