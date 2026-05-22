@@ -397,6 +397,26 @@ def gerar_retornos_simulados(n_dias=252):
 
     return retornos, precos, precos_ini
 
+@st.cache_data(ttl=3600)
+def buscar_dados_yahoo(ativos, periodo="1y"):
+    """
+    Busca retornos históricos reais via Yahoo Finance.
+    Fallback automático para dados simulados em caso de erro.
+    """
+    import yfinance as yf
+
+    tickers = [f"{a}.SA" for a in ativos]
+    try:
+        raw = yf.download(tickers, period=periodo, auto_adjust=True, progress=False)
+        precos = raw["Close"].copy()
+        precos.columns = [c.replace(".SA", "") for c in precos.columns]
+        precos = precos.dropna()
+        retornos = precos.pct_change().dropna()
+        return retornos, precos, True   # True = dados reais
+    except Exception as e:
+        st.warning(f"⚠️ Yahoo Finance indisponível ({e}). Usando dados simulados.")
+        retornos, precos, precos_ini = gerar_retornos_simulados()
+        return retornos, precos, False  # False = dados simulados
 
 def criar_posicoes_exemplo():
     """
@@ -657,14 +677,41 @@ def page_upload():
 
     # --- Tab Exemplo ---
     with tab_exemplo:
-        st.markdown("Clique no botão abaixo para carregar posições e dados históricos simulados.")
-        if st.button("🚀 Carregar Dados de Exemplo", type="primary"):
-            posicoes = criar_posicoes_exemplo()
+        st.markdown("### 📡 Fonte dos Dados Históricos")
+fonte = st.radio(
+    "Escolha a fonte:",
+    options=["🌐 Dados Reais (Yahoo Finance)", "🎲 Dados Simulados"],
+    help="Dados reais puxam os últimos 12 meses da B3. Requer conexão com internet."
+)
+
+periodo = "1y"
+if fonte == "🌐 Dados Reais (Yahoo Finance)":
+    periodo = st.selectbox(
+        "Período histórico:",
+        options=["6mo", "1y", "2y"],
+        index=1,
+        format_func=lambda x: {"6mo": "6 meses", "1y": "1 ano", "2y": "2 anos"}[x]
+    )
+
+if st.button("🚀 Carregar Dados", type="primary"):
+    posicoes = criar_posicoes_exemplo()
+    ativos   = posicoes["Ativo"].unique().tolist()
+
+    with st.spinner("Buscando dados..."):
+        if fonte == "🌐 Dados Reais (Yahoo Finance)":
+            retornos, precos, real = buscar_dados_yahoo(ativos, periodo)
+        else:
             retornos, precos, _ = gerar_retornos_simulados()
-            st.session_state["posicoes"] = posicoes
-            st.session_state["retornos"] = retornos
-            st.session_state["precos"]   = precos
-            st.success("✅ Dados de exemplo carregados com sucesso!")
+            real = False
+
+    st.session_state["posicoes"] = posicoes
+    st.session_state["retornos"] = retornos
+    st.session_state["precos"]   = precos
+
+    if real:
+        st.success("✅ Dados reais carregados via Yahoo Finance!")
+    else:
+        st.success("✅ Dados simulados carregados!")
 
         if "posicoes" in st.session_state:
             st.dataframe(st.session_state["posicoes"], use_container_width=True)
