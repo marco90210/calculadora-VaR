@@ -29,180 +29,194 @@ warnings.filterwarnings("ignore")
 # ============================================================
 
 st.set_page_config(
-    page_title="VaR Terminal | Mesas de Trading",
-    page_icon="📡",
+    page_title="VaR Dashboard | Mesas de Trading",
+    page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # ============================================================
-# 2. CSS — TEMA BLOOMBERG / TERMINAL FINANCEIRO
+# 2. CSS — TEMA CLARO CORPORATIVO
 # ============================================================
 
 st.markdown(
     """
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
         /* ── Fundo geral ── */
-        .stApp {
-            background-color: #0d0d0d;
-        }
+        .stApp { background-color: #F4F6FA; }
+
         section[data-testid="stSidebar"] {
-            background-color: #111111;
-            border-right: 1px solid #FF6600;
+            background: linear-gradient(180deg, #0A2342 0%, #1B3A6B 100%);
+            border-right: none;
         }
+
         /* ── Texto geral ── */
         html, body, [class*="css"], p, span, label, div {
-            color: #e0e0e0;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Inter', sans-serif;
+            color: #1a1a2e;
         }
-        h1, h2, h3, h4 { color: #FF6600 !important; font-family: 'Courier New', monospace; }
+        h1, h2, h3, h4 {
+            font-family: 'Inter', sans-serif;
+            color: #0A2342 !important;
+            font-weight: 600;
+        }
+
+        /* ── Sidebar textos ── */
+        section[data-testid="stSidebar"] * { color: #CBD5E1 !important; }
+        section[data-testid="stSidebar"] h1,
+        section[data-testid="stSidebar"] h2,
+        section[data-testid="stSidebar"] h3 { color: #FFFFFF !important; }
 
         /* ── Header principal ── */
         .main-header {
             font-size: 2rem;
             font-weight: 700;
-            color: #FF6600 !important;
+            color: #0A2342 !important;
             text-align: center;
-            padding: 0.8rem 0 0.1rem 0;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            border-bottom: 2px solid #FF6600;
-            margin-bottom: 0.3rem;
+            padding: 1rem 0 0.2rem 0;
+            letter-spacing: 1px;
         }
         .sub-header {
-            font-size: 0.9rem;
-            color: #888 !important;
+            font-size: 0.95rem;
+            color: #64748B !important;
             text-align: center;
-            letter-spacing: 3px;
-            text-transform: uppercase;
             margin-bottom: 1.5rem;
+            font-weight: 400;
+        }
+        .badge {
+            display: inline-block;
+            background: #E8F0FE;
+            color: #1B3A6B !important;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            margin: 0 0.2rem;
+            letter-spacing: 1px;
         }
 
         /* ── Cards semáforo ── */
         .card-green {
-            background: #0a1a0a;
-            border: 1px solid #00FF41;
-            border-left: 4px solid #00FF41;
-            padding: 0.9rem 1.2rem;
-            border-radius: 4px;
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-top: 4px solid #16A34A;
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
             margin: 0.4rem 0;
-            box-shadow: 0 0 8px rgba(0,255,65,0.15);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
         .card-yellow {
-            background: #1a1500;
-            border: 1px solid #FFD700;
-            border-left: 4px solid #FFD700;
-            padding: 0.9rem 1.2rem;
-            border-radius: 4px;
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-top: 4px solid #D97706;
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
             margin: 0.4rem 0;
-            box-shadow: 0 0 8px rgba(255,215,0,0.15);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
         .card-red {
-            background: #1a0a0a;
-            border: 1px solid #FF3333;
-            border-left: 4px solid #FF3333;
-            padding: 0.9rem 1.2rem;
-            border-radius: 4px;
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-top: 4px solid #DC2626;
+            padding: 1rem 1.2rem;
+            border-radius: 8px;
             margin: 0.4rem 0;
-            box-shadow: 0 0 8px rgba(255,51,51,0.2);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
-        .card-green h3, .card-green p { color: #00FF41 !important; }
-        .card-yellow h3, .card-yellow p { color: #FFD700 !important; }
-        .card-red h3, .card-red p { color: #FF3333 !important; }
+        .card-green h3 { color: #16A34A !important; }
+        .card-green p  { color: #4B5563 !important; margin: 0; }
+        .card-yellow h3 { color: #D97706 !important; }
+        .card-yellow p  { color: #4B5563 !important; margin: 0; }
+        .card-red h3 { color: #DC2626 !important; }
+        .card-red p  { color: #4B5563 !important; margin: 0; }
 
-        /* ── Metric box ── */
+        /* ── Metric box (steps) ── */
         .metric-box {
-            background: #141414;
-            border: 1px solid #FF6600;
-            border-radius: 4px;
-            padding: 1.2rem;
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 1.4rem 1rem;
             text-align: center;
-            box-shadow: 0 0 10px rgba(255,102,0,0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: box-shadow 0.2s;
         }
-        .metric-box h2 { color: #FF6600 !important; font-size: 2rem; }
-        .metric-box h4 { color: #FF6600 !important; }
-        .metric-box p  { color: #aaa !important; font-size: 0.82rem; }
+        .metric-box:hover { box-shadow: 0 4px 16px rgba(10,35,66,0.12); }
+        .metric-box h2 { color: #1B3A6B !important; font-size: 2.2rem; margin: 0; }
+        .metric-box h4 { color: #0A2342 !important; font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; margin: 0.4rem 0 0.2rem 0; }
+        .metric-box p  { color: #64748B !important; font-size: 0.8rem; margin: 0; }
 
         /* ── Botões ── */
         .stButton > button {
-            background: #FF6600 !important;
-            color: #000 !important;
-            font-weight: 700 !important;
-            font-family: 'Courier New', monospace !important;
+            background: linear-gradient(135deg, #1B3A6B, #0A2342) !important;
+            color: #FFFFFF !important;
+            font-weight: 600 !important;
+            font-family: 'Inter', sans-serif !important;
             border: none !important;
-            border-radius: 3px !important;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            border-radius: 6px !important;
+            padding: 0.5rem 1.5rem !important;
+            letter-spacing: 0.5px;
         }
         .stButton > button:hover {
-            background: #FF8C00 !important;
-            box-shadow: 0 0 12px rgba(255,102,0,0.5) !important;
-        }
-
-        /* ── Inputs, selects ── */
-        .stSelectbox > div > div,
-        .stRadio > div,
-        .stNumberInput > div > div > input,
-        .stSlider {
-            background-color: #1a1a1a !important;
-            color: #e0e0e0 !important;
-            border-color: #FF6600 !important;
+            background: linear-gradient(135deg, #2563EB, #1B3A6B) !important;
+            box-shadow: 0 4px 12px rgba(27,58,107,0.3) !important;
         }
 
         /* ── Tabs ── */
         .stTabs [data-baseweb="tab"] {
-            background: #1a1a1a;
-            color: #FF6600;
-            border-bottom: 2px solid #333;
-            font-family: 'Courier New', monospace;
+            background: transparent;
+            color: #64748B;
+            border-bottom: 2px solid #E2E8F0;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
         }
         .stTabs [aria-selected="true"] {
-            background: #FF6600 !important;
-            color: #000 !important;
+            color: #1B3A6B !important;
+            border-bottom: 2px solid #1B3A6B !important;
+            font-weight: 600 !important;
         }
 
         /* ── Expander ── */
         .streamlit-expanderHeader {
-            background: #1a1a1a !important;
-            color: #FF6600 !important;
-            border: 1px solid #333 !important;
-            font-family: 'Courier New', monospace;
+            background: #FFFFFF !important;
+            color: #0A2342 !important;
+            border: 1px solid #E2E8F0 !important;
+            border-radius: 6px !important;
+            font-weight: 600;
         }
-
-        /* ── Dataframe ── */
-        .stDataFrame { border: 1px solid #333; }
 
         /* ── Métricas nativas ── */
         [data-testid="metric-container"] {
-            background: #141414;
-            border: 1px solid #FF6600;
-            border-radius: 4px;
-            padding: 0.8rem;
-            box-shadow: 0 0 8px rgba(255,102,0,0.1);
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
-        [data-testid="metric-container"] label { color: #888 !important; font-size: 0.75rem; }
-        [data-testid="metric-container"] [data-testid="stMetricValue"] { color: #FF6600 !important; font-size: 1.4rem; }
-
-        /* ── Divider ── */
-        hr { border-color: #333 !important; }
-
-        /* ── Alertas / info ── */
-        .stAlert { border-radius: 3px; font-family: 'Courier New', monospace; }
-
-        /* ── Sidebar texto ── */
-        .css-1d391kg, [data-testid="stSidebarNav"] { color: #e0e0e0; }
+        [data-testid="metric-container"] label {
+            color: #64748B !important;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        [data-testid="metric-container"] [data-testid="stMetricValue"] {
+            color: #0A2342 !important;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
 
         /* ── Progress bar ── */
-        .stProgress > div > div { background-color: #FF6600 !important; }
+        .stProgress > div > div { background-color: #1B3A6B !important; }
 
-        /* ── Ticker style para título ── */
-        .ticker {
-            font-family: 'Courier New', monospace;
-            font-size: 0.8rem;
-            color: #00FF41;
-            letter-spacing: 2px;
-            text-align: center;
-            margin-bottom: 1rem;
+        /* ── Divider ── */
+        hr { border-color: #E2E8F0 !important; }
+
+        /* ── Dataframe ── */
+        .stDataFrame {
+            border: 1px solid #E2E8F0 !important;
+            border-radius: 8px;
         }
     </style>
     """,
@@ -563,45 +577,52 @@ def calcular_var_mesa(mesa_df, retornos_df, params):
 # ----------------------------------------------------------
 
 def page_home():
-    st.markdown('<div class="main-header">📡 VaR Terminal — Mesas de Trading</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-header">▸ sistema de monitoramento de risco de mercado ◂</div>', unsafe_allow_html=True)
-    st.markdown('<div class="ticker">PETR4 &nbsp;|&nbsp; VALE3 &nbsp;|&nbsp; ITUB4 &nbsp;|&nbsp; BBDC4 &nbsp;|&nbsp; ABEV3 &nbsp;|&nbsp; VaR 95% &nbsp;|&nbsp; HORIZON: 1D</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">📊 VaR Dashboard — Mesas de Trading</div>', unsafe_allow_html=True)
+    st.markdown('<div class="sub-header">Sistema de Monitoramento de Risco de Mercado</div>', unsafe_allow_html=True)
+    st.markdown("""
+    <div style="text-align:center;margin-bottom:1.5rem">
+        <span class="badge">VaR HISTÓRICO</span>
+        <span class="badge">PARAMÉTRICO</span>
+        <span class="badge">MONTE CARLO</span>
+        <span class="badge">BLACK-SCHOLES</span>
+    </div>
+    """, unsafe_allow_html=True)
     st.markdown("---")
 
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown("""
-        ### ▸ OBJETIVO
+        ### 🎯 Objetivo
         Simular a área de **risco de mercado** de uma instituição financeira,
         monitorando o **Value at Risk (VaR)** de diferentes mesas de trading
         e gerando alertas quando os limites aprovados são ultrapassados.
         """)
     with c2:
         st.markdown("""
-        ### ▸ METODOLOGIAS
-        - `HIST` — VaR Histórico (empírico)
-        - `PARAM` — VaR Paramétrico (Normal)
-        - `MC` — VaR Monte Carlo (GBM)
-        - `BS+Δ` — Black-Scholes + Delta (opções)
+        ### 📐 Metodologias
+        - **VaR Histórico** — distribuição empírica
+        - **VaR Paramétrico** — distribuição Normal
+        - **VaR Monte Carlo** — simulação GBM
+        - **Opções** — Aproximação Delta + Black-Scholes
         """)
     with c3:
         st.markdown("""
-        ### ▸ MESAS MONITORADAS
-        - `[01]` Ações Brasil
-        - `[02]` Opções
-        - `[03]` Long & Short
-        - `[04]` Volatilidade
-        - `[05]` Mesa Proprietária
+        ### 🏢 Mesas Monitoradas
+        - Mesa de Ações Brasil
+        - Mesa de Opções
+        - Mesa Long & Short
+        - Mesa de Volatilidade
+        - Mesa Proprietária
         """)
 
     st.markdown("---")
-    st.markdown("### ▸ FLUXO DE OPERAÇÃO")
+    st.markdown("### 🗺️ Fluxo de Uso")
 
     passos = [
-        ("01", "UPLOAD",      "Importe CSV/Excel ou carregue dados de exemplo"),
-        ("02", "PARÂMETROS",  "Defina confiança, horizonte e metodologia"),
-        ("03", "CÁLCULO",     "Execute o VaR para todas as mesas"),
-        ("04", "DASHBOARD",   "Monitore gráficos, alertas e ranking"),
+        ("01", "Upload",      "Importe CSV/Excel ou carregue dados de exemplo"),
+        ("02", "Parâmetros",  "Defina confiança, horizonte e metodologia"),
+        ("03", "Cálculo",     "Execute o VaR para todas as mesas"),
+        ("04", "Dashboard",   "Monitore gráficos, alertas e ranking"),
     ]
 
     cols = st.columns(4)
@@ -609,21 +630,21 @@ def page_home():
         with cols[i]:
             st.markdown(f"""
             <div class="metric-box">
-                <h2 style="color:#FF6600;font-size:2.5rem;margin:0">{num}</h2>
-                <h4 style="color:#FF6600;letter-spacing:2px;margin:0.3rem 0">{titulo}</h4>
-                <p style="color:#888;font-size:0.8rem;margin:0">{desc}</p>
+                <h2>{num}</h2>
+                <h4>{titulo}</h4>
+                <p>{desc}</p>
             </div>
             """, unsafe_allow_html=True)
 
     st.markdown("---")
-    st.markdown("### ▸ SEMÁFORO DE RISCO")
+    st.markdown("### 🚦 Semáforo de Risco")
     c1, c2, c3 = st.columns(3)
     with c1:
-        st.markdown('<div class="card-green"><h3>● VERDE</h3><p>Utilização ≤ 70% — Risco confortável</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-green"><h3>🟢 Verde</h3><p>Utilização ≤ 70% — Risco confortável</p></div>', unsafe_allow_html=True)
     with c2:
-        st.markdown('<div class="card-yellow"><h3>● AMARELO</h3><p>Utilização 70%–100% — Atenção redobrada</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-yellow"><h3>🟡 Amarelo</h3><p>Utilização 70%–100% — Atenção redobrada</p></div>', unsafe_allow_html=True)
     with c3:
-        st.markdown('<div class="card-red"><h3>● VERMELHO</h3><p>Utilização > 100% — Excesso de limite</p></div>', unsafe_allow_html=True)
+        st.markdown('<div class="card-red"><h3>🔴 Vermelho</h3><p>Utilização > 100% — Excesso de limite</p></div>', unsafe_allow_html=True)
 
 
 # ----------------------------------------------------------
@@ -1229,6 +1250,253 @@ def page_dashboard():
 
 
 # ============================================================
+# 6.7  BACKTESTING DO VaR
+# ============================================================
+
+def page_backtesting():
+    st.title("🔬 Backtesting do VaR")
+    st.markdown(
+        "Verifica se o VaR calculado foi preciso historicamente — "
+        "contando quantos dias a perda real **ultrapassou** o VaR previsto (**exceções**)."
+    )
+
+    if "retornos" not in st.session_state:
+        st.warning("⚠️ Carregue os dados primeiro na aba *Upload de Posições*.")
+        return
+
+    retornos = st.session_state["retornos"]
+    params   = st.session_state.get("params", {
+        "confianca": 0.95, "metodologia": "Histórico", "horizonte": 1
+    })
+
+    # ── Configurações do backtesting ──
+    st.markdown("### ⚙️ Configurações")
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        ativo_bt = st.selectbox("Ativo para backtesting:", retornos.columns.tolist())
+    with c2:
+        confianca_bt = st.select_slider(
+            "Nível de Confiança",
+            options=[0.90, 0.95, 0.99],
+            value=params.get("confianca", 0.95),
+            format_func=lambda x: f"{x*100:.0f}%",
+        )
+    with c3:
+        janela_bt = st.selectbox(
+            "Janela de estimação (dias)",
+            options=[60, 126, 252],
+            index=1,
+            format_func=lambda x: f"{x} dias (~{x//21} meses)",
+        )
+
+    met_bt = st.radio(
+        "Metodologia",
+        options=["Histórico", "Paramétrico", "Monte Carlo"],
+        horizontal=True,
+    )
+
+    if st.button("▶ Rodar Backtesting", type="primary"):
+
+        ret_serie = retornos[ativo_bt].dropna().values
+        n_total   = len(ret_serie)
+
+        if n_total < janela_bt + 20:
+            st.error("Série histórica muito curta para a janela escolhida.")
+            return
+
+        # ── Loop: calcula VaR em cada dia e verifica exceção ──
+        datas, vars_bt, retornos_reais, excecoes = [], [], [], []
+
+        for i in range(janela_bt, n_total):
+            janela   = ret_serie[i - janela_bt: i]
+            ret_real = ret_serie[i]          # retorno do dia seguinte (out-of-sample)
+
+            if met_bt == "Histórico":
+                v, _ = var_historico(pd.Series(janela), confianca_bt, 1.0)
+            elif met_bt == "Paramétrico":
+                v, _ = var_parametrico(pd.Series(janela), confianca_bt, 1.0)
+            else:
+                v, _, _ = var_monte_carlo(pd.Series(janela), confianca_bt, 1.0, 5_000)
+
+            # VaR em termos de retorno (negativo = perda)
+            var_retorno = -v   # ex: -0.032 significa perda de 3,2%
+            excecao     = ret_real < var_retorno  # perda real > VaR
+
+            datas.append(retornos.index[i])
+            vars_bt.append(var_retorno)
+            retornos_reais.append(ret_real)
+            excecoes.append(excecao)
+
+        df_bt = pd.DataFrame({
+            "Data":         datas,
+            "Retorno Real": retornos_reais,
+            "VaR (limite)": vars_bt,
+            "Exceção":      excecoes,
+        })
+
+        # ── Estatísticas ──
+        T = len(df_bt)
+        N = int(df_bt["Exceção"].sum())
+        taxa_exc   = N / T
+        taxa_esp   = 1 - confianca_bt
+
+        # ── Teste de Kupiec (POF — Proportion of Failures) ──
+        # H0: taxa de exceções = taxa esperada
+        # LR ~ Chi-quadrado(1) sob H0
+        from scipy.stats import chi2
+        if N == 0:
+            lr_stat = 0.0
+        elif N == T:
+            lr_stat = 9999.0
+        else:
+            lr_stat = -2 * (
+                (T - N) * np.log(1 - taxa_esp) + N * np.log(taxa_esp)
+            ) + 2 * (
+                (T - N) * np.log(1 - taxa_exc) + N * np.log(taxa_exc)
+            )
+
+        p_valor   = 1 - chi2.cdf(lr_stat, df=1)
+        aprovado  = p_valor > 0.05   # não rejeita H0 a 5%
+
+        # ── KPIs ──
+        st.markdown("---")
+        st.markdown("### 📊 Resultados do Backtesting")
+
+        k1, k2, k3, k4, k5 = st.columns(5)
+        k1.metric("Dias Testados",         f"{T}")
+        k2.metric("Exceções Observadas",   f"{N}")
+        k3.metric("Taxa de Exceção",       f"{taxa_exc*100:.2f}%")
+        k4.metric("Taxa Esperada",         f"{taxa_esp*100:.2f}%")
+        k5.metric("p-valor Kupiec",        f"{p_valor:.4f}",
+                  delta="✅ APROVADO" if aprovado else "❌ REPROVADO")
+
+        # Interpretação do teste
+        if aprovado:
+            st.success(
+                f"✅ **Teste de Kupiec APROVADO** (p-valor = {p_valor:.4f} > 0,05)  "
+                f"— O modelo de VaR {met_bt} é estatisticamente adequado. "
+                f"A taxa de exceções ({taxa_exc*100:.2f}%) é compatível com o nível de confiança de {confianca_bt*100:.0f}%."
+            )
+        else:
+            st.error(
+                f"❌ **Teste de Kupiec REPROVADO** (p-valor = {p_valor:.4f} < 0,05)  "
+                f"— O modelo subestima ou superestima o risco. "
+                f"Taxa observada: {taxa_exc*100:.2f}% vs esperada: {taxa_esp*100:.2f}%."
+            )
+
+        st.markdown("---")
+
+        # ── Gráfico 1: Retornos reais vs VaR ──
+        st.markdown("### 📈 Retornos Reais vs Limite do VaR")
+
+        exc_datas = df_bt[df_bt["Exceção"]]["Data"]
+        exc_rets  = df_bt[df_bt["Exceção"]]["Retorno Real"]
+
+        fig1 = go.Figure()
+
+        # Retornos reais
+        fig1.add_trace(go.Scatter(
+            x=df_bt["Data"], y=df_bt["Retorno Real"],
+            mode="lines", name="Retorno Real",
+            line=dict(color="#4A90D9", width=1),
+        ))
+
+        # Linha do VaR
+        fig1.add_trace(go.Scatter(
+            x=df_bt["Data"], y=df_bt["VaR (limite)"],
+            mode="lines", name=f"VaR {confianca_bt*100:.0f}% (limite)",
+            line=dict(color="#FF6600", width=1.5, dash="dash"),
+        ))
+
+        # Exceções em vermelho
+        fig1.add_trace(go.Scatter(
+            x=exc_datas, y=exc_rets,
+            mode="markers", name="Exceções",
+            marker=dict(color="#DC2626", size=7, symbol="x"),
+        ))
+
+        fig1.update_layout(
+            template="plotly_dark" if "#0d0d0d" in st.session_state.get("tema","") else "plotly_white",
+            height=420,
+            xaxis_title="Data",
+            yaxis_title="Retorno",
+            legend=dict(orientation="h", yanchor="bottom", y=1.02),
+            hovermode="x unified",
+        )
+        st.plotly_chart(fig1, use_container_width=True)
+
+        # ── Gráfico 2: Exceções ao longo do tempo (barras) ──
+        c1, c2 = st.columns(2)
+
+        with c1:
+            st.markdown("### 📅 Exceções por Mês")
+            df_bt["Mes"] = pd.to_datetime(df_bt["Data"]).dt.to_period("M").astype(str)
+            exc_mes = df_bt.groupby("Mes")["Exceção"].sum().reset_index()
+            exc_mes.columns = ["Mês", "Exceções"]
+
+            fig2 = go.Figure(go.Bar(
+                x=exc_mes["Mês"], y=exc_mes["Exceções"],
+                marker_color="#DC2626",
+                text=exc_mes["Exceções"],
+                textposition="outside",
+            ))
+            fig2.update_layout(
+                height=350,
+                xaxis_title="Mês",
+                yaxis_title="Nº de Exceções",
+                xaxis_tickangle=-45,
+            )
+            st.plotly_chart(fig2, use_container_width=True)
+
+        with c2:
+            st.markdown("### 🥧 Proporção de Dias")
+            fig3 = go.Figure(go.Pie(
+                labels=["Dias sem exceção", "Exceções"],
+                values=[T - N, N],
+                marker_colors=["#16A34A", "#DC2626"],
+                hole=0.4,
+                textinfo="label+percent",
+            ))
+            fig3.update_layout(height=350)
+            st.plotly_chart(fig3, use_container_width=True)
+
+        # ── Tabela de exceções ──
+        st.markdown("### 📋 Detalhes das Exceções")
+        df_exc = df_bt[df_bt["Exceção"]].copy()
+        df_exc["Retorno Real"] = df_exc["Retorno Real"].map("{:.4f}".format)
+        df_exc["VaR (limite)"] = df_exc["VaR (limite)"].map("{:.4f}".format)
+        df_exc = df_exc.drop(columns=["Exceção"])
+        df_exc["Data"] = df_exc["Data"].astype(str)
+
+        if df_exc.empty:
+            st.success("Nenhuma exceção registrada no período!")
+        else:
+            st.dataframe(df_exc, use_container_width=True)
+
+        # ── Interpretação do Teste de Kupiec ──
+        st.markdown("---")
+        st.markdown("### 📖 Sobre o Teste de Kupiec (POF)")
+        st.markdown(f"""
+        O **Teste de Kupiec** (1995) é o teste estatístico padrão para validar modelos de VaR.
+
+        | Parâmetro | Valor |
+        |-----------|-------|
+        | Total de observações (T) | {T} |
+        | Nº de exceções (N) | {N} |
+        | Taxa observada (N/T) | {taxa_exc*100:.2f}% |
+        | Taxa esperada (1 - IC) | {taxa_esp*100:.2f}% |
+        | Estatística LR | {lr_stat:.4f} |
+        | p-valor | {p_valor:.4f} |
+        | Resultado | {"✅ Modelo adequado" if aprovado else "❌ Modelo inadequado"} |
+
+        **Interpretação:** se o p-valor > 0,05, não rejeitamos H₀ — o modelo gera exceções
+        na proporção esperada e é considerado **estatisticamente válido**.
+        Um excesso de exceções indica que o VaR **subestima o risco** (modelo muito otimista).
+        Poucas exceções indicam que o VaR **superestima o risco** (modelo muito conservador).
+        """)
+
+
+# ============================================================
 # 7. NAVEGAÇÃO PRINCIPAL
 # ============================================================
 
@@ -1249,6 +1517,7 @@ def main():
         "▸ CÁLCULO DO VaR":            page_calculo,
         "▸ MONITORAMENTO DE LIMITES":  page_limites,
         "▸ DASHBOARD EXECUTIVO":       page_dashboard,
+        "▸ BACKTESTING DO VaR":        page_backtesting,
     }
 
     pagina = st.sidebar.radio("", list(paginas.keys()))
