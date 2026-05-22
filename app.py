@@ -676,45 +676,45 @@ def page_upload():
         st.download_button("⬇️ Baixar Template CSV", csv_bytes, "template_posicoes.csv", "text/csv")
 
     # --- Tab Exemplo ---
-    with tab_exemplo:
-        st.markdown("### 📡 Fonte dos Dados Históricos")
-fonte = st.radio(
-    "Escolha a fonte:",
-    options=["🌐 Dados Reais (Yahoo Finance)", "🎲 Dados Simulados"],
-    help="Dados reais puxam os últimos 12 meses da B3. Requer conexão com internet."
-)
-
-periodo = "1y"
-if fonte == "🌐 Dados Reais (Yahoo Finance)":
-    periodo = st.selectbox(
-        "Período histórico:",
-        options=["6mo", "1y", "2y"],
-        index=1,
-        format_func=lambda x: {"6mo": "6 meses", "1y": "1 ano", "2y": "2 anos"}[x]
+        with tab_exemplo:
+            st.markdown("### 📡 Fonte dos Dados Históricos")
+    fonte = st.radio(
+        "Escolha a fonte:",
+        options=["🌐 Dados Reais (Yahoo Finance)", "🎲 Dados Simulados"],
+        help="Dados reais puxam os últimos 12 meses da B3. Requer conexão com internet."
     )
-
-if st.button("🚀 Carregar Dados", type="primary"):
-    posicoes = criar_posicoes_exemplo()
-    ativos   = posicoes["Ativo"].unique().tolist()
-
-    with st.spinner("Buscando dados..."):
-        if fonte == "🌐 Dados Reais (Yahoo Finance)":
-            retornos, precos, real = buscar_dados_yahoo(ativos, periodo)
+    
+    periodo = "1y"
+    if fonte == "🌐 Dados Reais (Yahoo Finance)":
+        periodo = st.selectbox(
+            "Período histórico:",
+            options=["6mo", "1y", "2y"],
+            index=1,
+            format_func=lambda x: {"6mo": "6 meses", "1y": "1 ano", "2y": "2 anos"}[x]
+        )
+    
+    if st.button("🚀 Carregar Dados", type="primary"):
+        posicoes = criar_posicoes_exemplo()
+        ativos   = posicoes["Ativo"].unique().tolist()
+    
+        with st.spinner("Buscando dados..."):
+            if fonte == "🌐 Dados Reais (Yahoo Finance)":
+                retornos, precos, real = buscar_dados_yahoo(ativos, periodo)
+            else:
+                retornos, precos, _ = gerar_retornos_simulados()
+                real = False
+    
+        st.session_state["posicoes"] = posicoes
+        st.session_state["retornos"] = retornos
+        st.session_state["precos"]   = precos
+    
+        if real:
+            st.success("✅ Dados reais carregados via Yahoo Finance!")
         else:
-            retornos, precos, _ = gerar_retornos_simulados()
-            real = False
-
-    st.session_state["posicoes"] = posicoes
-    st.session_state["retornos"] = retornos
-    st.session_state["precos"]   = precos
-
-    if real:
-        st.success("✅ Dados reais carregados via Yahoo Finance!")
-    else:
-        st.success("✅ Dados simulados carregados!")
-
-        if "posicoes" in st.session_state:
-            st.dataframe(st.session_state["posicoes"], use_container_width=True)
+            st.success("✅ Dados simulados carregados!")
+    
+            if "posicoes" in st.session_state:
+                st.dataframe(st.session_state["posicoes"], use_container_width=True)
 
 
 # ----------------------------------------------------------
